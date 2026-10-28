@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đấu Trường Where Is Your School?</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e8f4fd;--card:#fff;--ink:#16324f;--mut:#5b7189;--line:#cfe3f3;--pri:#1d6fd8;--ok:#1a9a4a;--bad:#d6382f;--sun:#ffc83d;--p0:#1d6fd8;--p1:#e0483e;--p2:#1a9a4a;--p3:#e08a00}
+@media(prefers-color-scheme:dark){:root{--bg:#0f2236;--card:#173250;--ink:#eaf3fb;--mut:#9db4c9;--line:#2a4a6b}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito',system-ui,sans-serif;font-size:17px;min-height:100vh}
+h1,h2,.big{font-family:'Baloo 2','Nunito',system-ui,sans-serif;margin:0}
+#app{max-width:680px;margin:0 auto;padding:16px 14px 40px}
+.sky{text-align:center;font-size:34px;letter-spacing:4px;padding:6px 0 0}
+h1{text-align:center;font-size:34px;line-height:1.1;font-weight:800}
+.sub{text-align:center;color:var(--mut);margin:6px 0 18px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px}
+.lab{font-weight:800;margin:0 0 8px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+button,input,select{font:inherit;color:inherit}
+.chip{flex:1;min-width:64px;padding:10px;border:2px solid var(--line);background:var(--card);border-radius:12px;font-weight:800;cursor:pointer}
+.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+input[type=text],select{width:100%;padding:11px 12px;border:2px solid var(--line);border-radius:12px;background:var(--card)}
+.nm{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.dot{width:14px;height:14px;border-radius:50%;flex:none}
+.btn{display:block;width:100%;padding:13px;border:0;border-radius:14px;background:var(--sun);color:#3a2a00;font-weight:800;font-size:18px;cursor:pointer;box-shadow:0 4px 0 #c99a14}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #c99a14}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line);box-shadow:none;margin-top:8px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.sb{display:flex;gap:8px;margin-bottom:10px}
+.pl{flex:1;padding:8px 10px;border-radius:12px;border:2px solid var(--line);background:var(--card);text-align:center;font-weight:700;font-size:15px;opacity:.7}
+.pl.act{opacity:1;border-color:var(--c);box-shadow:0 0 0 3px var(--c)}
+.pl b{display:block;font-size:22px;color:var(--c)}
+.bar{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin:6px 0 12px}
+.bar i{display:block;height:100%;width:100%;background:var(--ok);transition:width .1s linear}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;background:var(--bg);font-weight:800;font-size:14px;color:var(--mut)}
+.big{font-size:76px;text-align:center;line-height:1.1;margin:6px 0}
+.q{font-size:21px;font-weight:800;text-align:center;margin:8px 0 14px}
+.mut{color:var(--mut);text-align:center}
+.opts{display:grid;gap:8px}
+.opt{padding:12px;border:2px solid var(--line);background:var(--card);border-radius:12px;font-weight:800;font-size:18px;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--pri)}
+.opt.right{background:var(--ok);border-color:var(--ok);color:#fff}
+.opt.wrong{background:var(--bad);border-color:var(--bad);color:#fff}
+.slot{min-height:56px;border:2px dashed var(--line);border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tok{padding:8px 12px;border-radius:10px;background:var(--pri);color:#fff;font-weight:800;border:0;cursor:pointer}
+.pool .tok{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.pool .tok:disabled{opacity:.25}
+.fb{border-radius:14px;padding:12px;margin-top:12px;text-align:center;font-weight:800}
+.fb.good{background:#d8f3e2;color:#0f5f2d}.fb.bad{background:#fde0de;color:#8d1f18}
+.fb .btn{margin-top:10px}
+.rank{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-weight:800}
+.rank span:last-child{margin-left:auto}
+.trophy{text-align:center;font-size:64px}
+.sb{flex-wrap:wrap}.pl{min-width:84px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script>
+// ====== DỮ LIỆU: sửa ở đây để thêm từ / câu mới ======
+let WORDS=[
+ {w:'town',e:'🏘️',vi:'thị trấn'},{w:'village',e:'🛖',vi:'làng, thôn'},
+ {w:'city',e:'🏙️',vi:'thành phố'},{w:'mountain',e:'⛰️',vi:'núi'},
+ {w:'capital',e:'🏛️',vi:'thủ đô'},{w:'in the centre of',e:'🎯',vi:'ở trung tâm của'},
+ {w:'in the suburb',e:'🏡',vi:'ở ngoại ô'}];
+const PLACES=[{p:'town',e:'🏘️'},{p:'village',e:'🛖'},{p:'city',e:'🏙️'},{p:'capital',e:'🏛️'}];
+let SENT=["My school is in the city.","His school is in the village.","Her school is in the town.",
+ "Their school is in the capital.","My school is in the suburb.","Her school is in the centre of the town.",
+ "Their school is in the centre of the city.","His school is in the suburb.","Where is your school?",
+ "Where is his school?","Where is her school?","Where is their school?","It's in the village.",
+ "It's in the centre of the capital."];
+const POSS=[['your','My'],['his','His'],['her','Her'],['their','Their']];
+const TYPES=[['write','✏️ Look and write'],['order','🧩 Reorder the words'],['listen','🎧 Listen and choose'],['qa','💬 Ask and answer']];
+// =====================================================
+const $=s=>document.querySelector(s),app=$('#app');
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>s.toLowerCase().replace(/[’']/g,"'").replace(/\s+/g,' ').trim();
+function say(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+const COL=i=>`hsl(${[215,5,140,35,280,175,330,60][i%8]} 70% 45%)`;
+let ME='',R=8,G,L={ps:[]},timer,peer,conns={},nid=1,hostCtl=false,myId=-1,CODE='',mode='home',hostConn;
+const rOpts=()=>[5,8,12,16].map(n=>`<option value="${n}" ${n==R?'selected':''}>${n} câu</option>`).join('');
+const myName=()=>{const e=$('#me');if(e)ME=e.value.trim();return ME||'Bạn'};
+const err=m=>{const e=$('#err');if(e)e.textContent=m};
+
+function home(){
+ mode='home';
+ app.innerHTML=`<div class="sky" aria-hidden="true">🏔️🏘️🏙️🏛️🏡</div>
+ <h1>Đấu Trường<br>Where is your school?</h1>
+ <p class="sub">Mỗi bạn chơi trên máy của mình. Chơi một mình hoặc đấu cùng bạn bè bằng mã phòng.</p>
+ <div class="card"><p class="lab">Tên của bạn</p><input type="text" id="me" maxlength="14" placeholder="Nhập tên" value="${esc(ME)}">
+ <p class="lab" style="margin-top:12px">Số câu (khi chơi một mình hoặc tạo phòng)</p><select onchange="R=+this.value">${rOpts()}</select></div>
+<div class="card"><p class="lab">Bài học (dùng khi chơi một mình hoặc khi bạn là chủ phòng)</p>
+ <p style="margin:0 0 8px"><b>${esc(LESSON)}</b> — ${WORDS.length} từ, ${SENT.length} câu</p>
+ <input type="file" id="lf" accept=".docx,.txt" onchange="loadFile(this)">
+ <details style="margin-top:8px"><summary>Hoặc dán nội dung bài học</summary>
+ <textarea id="lt" rows="7" style="width:100%;margin-top:8px;padding:10px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:inherit;font:inherit" placeholder="Từ vựng&#10;town | thị trấn | 🏘️&#10;Mẫu câu&#10;My school is in the city."></textarea>
+ <button class="chip" style="margin-top:6px;width:100%" onclick="useLesson($('#lt').value,'Bài tự nhập')">Dùng nội dung này</button></details>
+ <button class="chip" style="margin-top:8px;width:100%" onclick="resetLesson()">Về bài mẫu</button>
+ <p class="mut" style="margin:8px 0 0;color:${LOK?'var(--ok)':'var(--bad)'}">${esc(LMSG)}</p></div>
+ <button class="btn" onclick="solo()">Chơi một mình</button>
+ <div class="card" style="margin-top:14px"><p class="lab">Đấu cùng bạn bè</p>
+ <button class="btn ghost" style="margin:0 0 12px" onclick="hostRoom()">Tạo phòng mới</button>
+ <div class="row"><input type="text" id="code" maxlength="4" placeholder="Mã phòng" style="flex:1;text-transform:uppercase"><button class="chip" style="flex:none;padding:10px 18px" onclick="joinRoom()">Vào phòng</button></div>
+ <p class="mut" id="err" style="color:var(--bad);margin:8px 0 0"></p></div>`;
+}
+function solo(){myName();hostCtl=true;myId=0;G={ps:[{id:0,n:ME||'Bạn',s:0,ok:0,done:0}],total:R,i:-1,solo:1};nextQ()}
+function leave(){try{peer&&peer.destroy()}catch(e){}peer=null;conns={};hostCtl=false;G=null;L={ps:[]};home()}
+
+// ===== CHỦ PHÒNG =====
+function hostRoom(){
+ myName();CODE=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random()*24)]).join('');
+ err('Đang tạo phòng...');
+ try{peer&&peer.destroy()}catch(e){}
+ if(typeof Peer=='undefined')return err('Không tải được thư viện kết nối. Kiểm tra mạng nhé.');
+ peer=new Peer('dtvt-'+CODE);
+ peer.on('error',e=>{if(e.type=='unavailable-id')return hostRoom();err('Không tạo được phòng ('+e.type+'). Thử lại nhé.')});
+ peer.on('open',()=>{hostCtl=true;myId=0;nid=1;conns={};L.ps=[{id:0,n:ME||'Bạn'}];lobby()});
+ peer.on('connection',c=>{c.on('data',m=>onHost(c,m));c.on('close',()=>drop(c))});
+}
+const bc=m=>Object.values(conns).forEach(c=>{try{c.send(m)}catch(e){}});
+function onHost(c,m){
+ if(m.t=='join'){
+  if(G&&!G.over)return c.send({t:'full',m:'Phòng đang chơi rồi, đợi ván sau nhé.'});
+  if(L.ps.length>=8)return c.send({t:'full',m:'Phòng đã đủ 8 người.'});
+  const id=nid++;c.pid=id;conns[id]=c;L.ps.push({id,n:m.n});
+  c.send({t:'welcome',id});bc({t:'lobby',ps:L.ps});lobby();
+ }else if(m.t=='ans'&&G&&!G.over){
+  const p=G.ps.find(x=>x.id==c.pid);
+  if(p&&!p.done&&m.i==G.i){p.done=1;if(m.ok){p.s+=m.pts;p.ok++}sync();checkAll()}
+ }
+}
+function drop(c){
+ const id=c.pid;if(id==null)return;delete conns[id];L.ps=L.ps.filter(p=>p.id!=id);
+ if(G&&!G.over){G.ps=G.ps.filter(p=>p.id!=id);sync();checkAll()}
+ else{bc({t:'lobby',ps:L.ps});if(mode=='lobby')lobby()}
+}
+function sync(){bc({t:'sc',ps:G.ps});updSb()}
+function startGame(){G={ps:L.ps.map(p=>({id:p.id,n:p.n,s:0,ok:0,done:0})),total:R,i:-1};nextQ()}
+function nextQ(){
+ clearTimeout(G.to);clearTimeout(G.adv);G.i++;
+ if(G.i>=G.total){G.over=1;bc({t:'end',ps:G.ps});return result()}
+ G.ps.forEach(p=>p.done=0);G.q=makeQ(TYPES[G.i%4][0]);
+ bc({t:'q',i:G.i,total:G.total,ps:G.ps,q:G.q});showQ();
+ if(!G.solo)G.to=setTimeout(()=>{G.ps.forEach(p=>p.done=1);checkAll()},27000);
+}
+function checkAll(){
+ if(G.solo||!G.ps.every(p=>p.done))return;
+ clearTimeout(G.to);clearTimeout(G.adv);G.adv=setTimeout(nextQ,2800);
+}
+function again(){
+ if(G.ps.length==1&&G.solo)return solo();
+ G=null;bc({t:'lobby',ps:L.ps});lobby();
+}
+
+// ===== NGƯỜI VÀO PHÒNG =====
+function joinRoom(){
+ myName();const c=($('#code').value||'').trim().toUpperCase();
+ if(c.length!=4)return err('Nhập mã phòng gồm 4 chữ cái.');
+ if(typeof Peer=='undefined')return err('Không tải được thư viện kết nối. Kiểm tra mạng nhé.');
+ err('Đang vào phòng...');try{peer&&peer.destroy()}catch(e){}
+ peer=new Peer();
+ peer.on('error',e=>err(e.type=='peer-unavailable'?'Không tìm thấy phòng '+c+'.':'Lỗi kết nối ('+e.type+').'));
+ peer.on('open',()=>{
+  const conn=peer.connect('dtvt-'+c,{reliable:true});hostConn=conn;CODE=c;hostCtl=false;
+  conn.on('open',()=>conn.send({t:'join',n:ME||'Bạn'}));
+  conn.on('data',onClient);
+  conn.on('close',()=>{if(mode!='home'){alert('Đã mất kết nối với phòng.');leave()}});
+ });
+}
+function onClient(m){
+ if(m.t=='welcome')myId=m.id;
+ else if(m.t=='full'){alert(m.m);leave()}
+ else if(m.t=='lobby'){L.ps=m.ps;G=null;lobby()}
+ else if(m.t=='q'){G=m;showQ()}
+ else if(m.t=='sc'){if(G){G.ps=m.ps;updSb()}}
+ else if(m.t=='end'){G.ps=m.ps;G.over=1;result()}
+}
+function lobby(){
+ mode='lobby';
+ app.innerHTML=`<h1>Phòng chờ</h1><p class="sub">Mã phòng — đọc cho các bạn nhập</p>
+ <div class="big" style="letter-spacing:10px">${CODE}</div>
+ <div class="card">${L.ps.map((p,i)=>`<div class="rank"><span class="dot" style="background:${COL(i)}"></span><span>${esc(p.n)}${p.id==0?' (chủ phòng)':''}${p.id==myId?' · bạn':''}</span></div>`).join('')}</div>
+ ${hostCtl?`<div class="card"><p class="lab">Số câu</p><select onchange="R=+this.value">${rOpts()}</select></div>
+ <button class="btn" onclick="startGame()">Bắt đầu (${L.ps.length} người)</button>`:`<p class="mut">Đang chờ chủ phòng bắt đầu...</p>`}
+ <button class="btn ghost" onclick="leave()">Thoát phòng</button>`;
+}
+function sb(){return `<div class="sb" id="sb">${G.ps.map((p,i)=>`<div class="pl ${p.id==myId?'act':''}" style="--c:${COL(i)}">${esc(p.n)}${p.done?' ✓':''}<b>${p.s}</b></div>`).join('')}</div>`}
+function updSb(){const e=$('#sb');if(e&&G)e.outerHTML=sb()}
+
+function makeQ(type){
+ if(type=='write'){const o=rnd(WORDS);return{type,a:o.w,o}}
+ if(type=='order'){const a=rnd(SENT),t=a.split(' ');let x,n=0;do{x=shuf(t)}while(t.length>1&&x.join(' ')==a&&n++<20);return{type,a,pool:x,built:[]}}
+ const four=w=>shuf([w.w,...shuf(WORDS.filter(x=>x!=w)).slice(0,3).map(x=>x.w)]);
+ if(type=='listen'){const o=rnd(WORDS);return{type,a:o.w,opts:four(o)}}
+ const poss=SENT.map(t=>t.match(/^(My|His|Her|Their) school is (.+)$/)).filter(Boolean);
+ if(poss.length&&Math.random()<.5){const m=rnd(poss),k=POSS.find(x=>x[1]==m[1]);
+  return{type,kind:'poss',p:`Where is ${k[0]} school?\n— ___ school is ${m[2]}`,a:m[1],opts:POSS.map(x=>x[1])}}
+ const c=SENT.map(t=>{const w=WORDS.filter(x=>t.toLowerCase().includes(x.w.toLowerCase())).sort((a,b)=>b.w.length-a.w.length)[0];return w&&{t,w}}).filter(Boolean);
+ if(c.length){const {t,w}=rnd(c),i=t.toLowerCase().indexOf(w.w.toLowerCase());
+  return{type,kind:'fill',e:w.e,vi:w.vi,p:t.slice(0,i)+'___'+t.slice(i+w.w.length),a:w.w,opts:four(w)}}
+ return makeQ('write');
+}
+function showQ(){
+ mode='play';G.lock=0;G.left=20;const tt=TYPES[G.i%4],q=G.q;
+ app.innerHTML=sb()+`<div class="card"><div class="row" style="justify-content:space-between"><span class="tag">Câu ${G.i+1}/${G.total}</span><span class="tag">${tt[1]}</span></div>
+ <div class="bar"><i id="tb"></i></div><div id="q"></div><div id="fb"></div></div>`;
+ const b=$('#q');
+ if(q.type=='write'){
+  b.innerHTML=`<div class="big">${q.o.e}</div><p class="mut">${esc(q.o.vi)}</p><p class="q">Viết từ tiếng Anh</p>
+  <input type="text" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Gõ đáp án..."><button class="btn" style="margin-top:10px" onclick="chkW()">Kiểm tra</button>`;
+  $('#ans').focus();$('#ans').addEventListener('keydown',e=>{if(e.key=='Enter')chkW()});
+ }else if(q.type=='order'){drawOrder()}
+ else if(q.type=='listen'){
+  b.innerHTML=`<p class="q">Nghe và chọn từ đúng</p><button class="btn ghost" style="margin:0 0 12px" onclick="say('${q.a}')">🔊 Nghe lại</button>${opts(q.opts)}`;
+  say(q.a);
+ }else if(q.kind=='poss'){
+  b.innerHTML=`<p class="q">${esc(q.p).replace(/\n/g,'<br>')}</p>${opts(q.opts)}`;
+ }else{
+  b.innerHTML=`<div class="big">${q.e}</div><p class="mut">${esc(q.vi)}</p><p class="q">${esc(q.p)}</p>${opts(q.opts)}`;
+ }
+ clearInterval(timer);
+ timer=setInterval(()=>{G.left-=.1;const t=$('#tb');if(t){t.style.width=Math.max(0,G.left/20*100)+'%';t.style.background=G.left<6?'var(--bad)':'var(--ok)'}
+  if(G.left<=0)submit(false,q.a,1)},100);
+}
+function opts(o){return `<div class="opts">${o.map((x,k)=>`<button class="opt" onclick="pick(${k})">${esc(x)}</button>`).join('')}</div>`}
+function pick(k){const q=G.q;if(G.lock)return;document.querySelectorAll('.opt').forEach((e,j)=>{if(q.opts[j]==q.a)e.classList.add('right');else if(j==k)e.classList.add('wrong')});submit(q.opts[k]==q.a,q.a)}
+function chkW(){const v=$('#ans').value;if(!v.trim())return;submit(norm(v)==norm(G.q.a),G.q.a)}
+function drawOrder(){
+ const q=G.q;
+ $('#q').innerHTML=`<p class="q">Sắp xếp các từ thành câu đúng</p>
+ <div class="slot" id="slot">${q.built.map(k=>`<button class="tok" onclick="rem(${k})">${esc(q.pool[k])}</button>`).join('')}</div>
+ <div class="row pool">${q.pool.map((t,k)=>`<button class="tok" ${q.built.includes(k)?'disabled':''} onclick="add(${k})">${esc(t)}</button>`).join('')}</div>
+ <button class="btn" style="margin-top:12px" onclick="chkO()">Kiểm tra</button>`;
+}
+function add(k){if(G.lock)return;G.q.built.push(k);drawOrder()}
+function rem(k){if(G.lock)return;G.q.built=G.q.built.filter(x=>x!=k);drawOrder()}
+function chkO(){const q=G.q;if(!q.built.length)return;submit(norm(q.built.map(k=>q.pool[k]).join(' '))==norm(q.a),q.a)}
+function submit(ok,ans,timeout){
+ if(G.lock)return;G.lock=1;clearInterval(timer);
+ const pts=ok?10+Math.ceil(Math.max(0,G.left)/4):0;
+ document.querySelectorAll('#q button,#q input').forEach(e=>e.disabled=true);
+ if(hostCtl){const me=G.ps.find(p=>p.id==myId);me.done=1;if(ok){me.s+=pts;me.ok++}sync()}
+ else hostConn.send({t:'ans',i:G.i,ok,pts});
+ const f=$('#fb'),last=G.i+1>=G.total;f.className='fb '+(ok?'good':'bad');
+ f.innerHTML=(ok?`✅ Chính xác! +${pts} điểm`:`${timeout?'⏰ Hết giờ! ':'❌ Chưa đúng. '}Đáp án: <b>${esc(ans)}</b>`)+
+  (G.solo?`<button class="btn" onclick="nextQ()">${last?'Xem kết quả':'Câu tiếp theo'}</button>`:`<p class="mut" style="margin:8px 0 0">Đang chờ các bạn khác...</p>`);
+ if(G.q.type!='listen')say(ans);
+ if(hostCtl)checkAll();
+}
+function result(){
+ clearInterval(timer);mode='end';
+ const r=[...G.ps].sort((a,b)=>b.s-a.s),N=G.total,one=r.length==1,tie=!one&&r[0].s==r[1].s;
+ let head;
+ if(one){const pc=r[0].ok/N;head=`<div class="trophy">${pc>=.8?'🌟':pc>=.5?'👍':'💪'}</div><h2 style="text-align:center">${pc>=.8?'Tuyệt vời!':pc>=.5?'Khá lắm!':'Cố lên, thử lại nhé!'}</h2>`}
+ else head=`<div class="trophy">🏆</div><h2 style="text-align:center">${tie?'Hòa nhau!':esc(r[0].n)+' chiến thắng!'}</h2>`;
+ app.innerHTML=`<div class="card">${head}<div style="margin-top:12px">${r.map((p,k)=>`<div class="rank"><span>${['🥇','🥈','🥉'][k]||k+1}</span><span>${esc(p.n)}${p.id==myId&&!one?' (bạn)':''}</span><span>${p.s} điểm · ${p.ok}/${N} đúng</span></div>`).join('')}</div></div>
+ ${hostCtl?`<button class="btn" onclick="again()">Chơi lại</button>`:`<p class="mut">Đang chờ chủ phòng chơi lại...</p>`}
+ <button class="btn ghost" onclick="leave()">Về trang chủ</button>`;
+}
+let LESSON='Bài mẫu: Where is your school?',LMSG='',LOK=1;const DEF={W:WORDS,S:SENT,N:LESSON};
+function parseLesson(t){
+ const W=[],S=[];let sec='';
+ t.split(/\r?\n/).map(l=>l.trim()).filter(Boolean).forEach(l=>{
+  const h=l.replace(/^#+\s*/,'').replace(/[:：]\s*$/,'');
+  if(h.length<25&&!h.includes('|')){
+   if(/^(từ vựng|vocab|words)/i.test(h)){sec='w';return}
+   if(/^(mẫu câu|sentence|pattern|câu)/i.test(h)){sec='s';return}
+  }
+  l=l.replace(/^\d+[.)]\s*/,'');
+  if(sec=='w'){const x=l.split(/\s*[|\t]\s*/);if(x[0]&&x[1])W.push({w:x[0],vi:x[1],e:x[2]||''})}
+  else if(sec=='s')S.push(l);
+ });
+ return{W,S};
+}
+function useLesson(t,name){
+ myName();const r=parseLesson(t);
+ if(r.W.length<2||!r.S.length){LOK=0;LMSG='Chưa đọc được. Cần ít nhất 2 từ (dạng: từ | nghĩa | emoji) và 1 câu, dưới các tiêu đề "Từ vựng" và "Mẫu câu".'}
+ else{WORDS=r.W;SENT=r.S;LESSON=name;LOK=1;LMSG='Đã nạp bài học thành công.';try{localStorage.setItem('dtvt-lesson',JSON.stringify({t,name}))}catch(e){}}
+ home();
+}
+async function loadFile(inp){
+ const f=inp.files[0];if(!f)return;
+ try{let t;
+  if(/\.docx$/i.test(f.name)){if(typeof mammoth=='undefined')throw new Error('Không tải được thư viện đọc Word. Kiểm tra mạng nhé.');t=(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value}
+  else t=await f.text();
+  useLesson(t,f.name.replace(/\.\w+$/,''));
+ }catch(e){LOK=0;LMSG=String(e.message||e);home()}
+}
+function resetLesson(){myName();WORDS=DEF.W;SENT=DEF.S;LESSON=DEF.N;LOK=1;LMSG='Đã quay về bài mẫu.';try{localStorage.removeItem('dtvt-lesson')}catch(e){}home()}
+try{const d=JSON.parse(localStorage.getItem('dtvt-lesson')||'null');if(d){const r=parseLesson(d.t);if(r.W.length>1&&r.S.length){WORDS=r.W;SENT=r.S;LESSON=d.name}}}catch(e){}
+home();
+</script>
+</body>
+</html>
